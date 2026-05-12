@@ -16,6 +16,7 @@ COPY server.ts ./
 COPY TERMS.md PRIVACY.md ./
 COPY src/lib ./src/lib
 COPY src/types ./src/types
+COPY src/config ./src/config
 COPY public ./public
 
 ENV NODE_ENV=production
