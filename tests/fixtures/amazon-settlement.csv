@@ -1,0 +1,4 @@
+order id,sku,settlement amount,referral fee,fba fees,storage fee,other fees,gst amount,gst rate,ship state,return amount,charged weight,declared weight,quantity,order date,tcs amount,tds amount
+403-1111111,SKU-PHONE,1189,120,75,0,5,181,18,KA,0,1.2,0.4,1,2026-02-01,10,12
+403-1111112,SKU-CABLE,950,80,45,0,0,145,18,MH,0,0.5,0.5,1,2026-02-02,9.5,9.5
+403-1111113,SKU-BOOK,0,0,0,0,0,0,0,DL,420,0.5,0.5,1,2026-02-03,0,0

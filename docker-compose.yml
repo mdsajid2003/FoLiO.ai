@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  folioai:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - APP_URL=${APP_URL:-http://localhost:3000}
+      # REQUIRED in production: set this to your frontend domain to avoid CORS blocking all requests.
+      # Example: ALLOWED_ORIGIN=https://app.yourdomain.com
+      - ALLOWED_ORIGIN=${ALLOWED_ORIGIN:-http://localhost:3000}
+    volumes:
+      # Persists job queue and AI usage data across container restarts.
+      # Without this, all queued/completed jobs and monthly AI usage counts
+      # are lost every time the container restarts.
+      - folioai_data:/app/.guardianai
+    restart: unless-stopped
+
+volumes:
+  folioai_data:

@@ -1,0 +1,12 @@
+node_modules
+dist
+.git
+.guardianai
+.env
+.env.*
+!.env.example
+*.log
+.cursor
+.vscode
+coverage
+.DS_Store

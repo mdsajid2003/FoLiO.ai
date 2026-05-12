@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Guardian AI — Amazon India sellers</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #0e0e0c;
+      --paper: #f5f2eb;
+      --accent: #1a5c3a;
+      --accent2: #c8401a;
+      --muted: #7a7870;
+      --border: rgba(14,14,12,0.12);
+      --card: #ffffff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--paper); color: var(--ink); overflow-x: hidden; }
+    .nav { display: flex; align-items: center; justify-content: space-between; padding: 18px 32px; border-bottom: 1px solid var(--border); background: var(--paper); }
+    .nav-brand { font-family: 'Instrument Serif', serif; font-size: 20px; color: var(--ink); letter-spacing: -0.3px; }
+    .nav-brand span { color: var(--accent); font-style: italic; }
+    .nav-links { display: flex; gap: 28px; align-items: center; }
+    .nav-links a { font-size: 13px; color: var(--muted); text-decoration: none; transition: color .15s; }
+    .nav-links a:hover { color: var(--ink); }
+    .nav-cta { background: var(--ink); color: var(--paper); font-size: 13px; padding: 8px 18px; border-radius: 6px; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; font-weight: 500; transition: all .15s; }
+    .nav-cta:hover { background: var(--accent); }
+    .hero { padding: 72px 32px 56px; display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; max-width: 960px; margin: 0 auto; }
+    .hero-eyebrow { font-size: 11px; font-weight: 500; letter-spacing: .1em; color: var(--accent); text-transform: uppercase; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+    .hero-eyebrow::before { content: ''; width: 24px; height: 1px; background: var(--accent); display: inline-block; }
+    .hero-h1 { font-family: 'Instrument Serif', serif; font-size: 46px; line-height: 1.12; letter-spacing: -1px; color: var(--ink); margin-bottom: 20px; }
+    .hero-h1 em { font-style: italic; color: var(--accent); }
+    .hero-body { font-size: 15px; color: var(--muted); line-height: 1.7; margin-bottom: 28px; font-weight: 300; }
+    .hero-actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+    .btn-primary { background: var(--ink); color: var(--paper); font-size: 14px; padding: 12px 24px; border-radius: 8px; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; font-weight: 500; transition: all .15s; }
+    .btn-primary:hover { background: var(--accent); transform: translateY(-1px); }
+    .btn-ghost { background: transparent; color: var(--ink); font-size: 13px; padding: 12px 20px; border-radius: 8px; border: 1px solid var(--border); cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .15s; }
+    .btn-ghost:hover { border-color: var(--ink); }
+    .hero-note { font-size: 12px; color: var(--muted); margin-top: 14px; }
+    .hero-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+    .hc-header { padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .hc-dots { display: flex; gap: 5px; }
+    .hc-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); }
+    .hc-dot:first-child { background: #ff5f57; }
+    .hc-dot:nth-child(2) { background: #febc2e; }
+    .hc-dot:nth-child(3) { background: #28c840; }
+    .hc-badge { font-size: 11px; font-weight: 500; padding: 3px 8px; border-radius: 20px; background: #e8f5e9; color: #1a5c3a; }
+    .hc-body { padding: 18px; }
+    .hc-alert { background: #fff8f0; border: 1px solid #fde0c4; border-radius: 8px; padding: 12px 14px; margin-bottom: 14px; }
+    .hc-alert-title { font-size: 12px; font-weight: 500; color: #c8401a; margin-bottom: 3px; }
+    .hc-alert-val { font-size: 22px; font-weight: 500; color: var(--ink); font-family: 'Instrument Serif', serif; }
+    .hc-alert-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .hc-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+    .hc-m { background: #f9f8f5; border-radius: 8px; padding: 10px 12px; }
+    .hc-m-label { font-size: 10px; color: var(--muted); margin-bottom: 3px; }
+    .hc-m-val { font-size: 16px; font-weight: 500; color: var(--ink); }
+    .hc-m-val.g { color: var(--accent); }
+    .hc-m-val.r { color: var(--accent2); }
+    .hc-bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 11px; }
+    .hc-bar-label { width: 80px; color: var(--muted); flex-shrink: 0; text-align: right; }
+    .hc-bar-track { flex: 1; height: 6px; background: #f0ede6; border-radius: 3px; overflow: hidden; }
+    .hc-bar-fill { height: 100%; border-radius: 3px; }
+    .hc-bar-amt { width: 52px; color: var(--ink); font-weight: 500; }
+    .ticker { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 12px 0; overflow: hidden; background: var(--ink); }
+    .ticker-inner { display: flex; gap: 0; white-space: nowrap; animation: ticker 20s linear infinite; }
+    .ticker-item { font-size: 12px; color: rgba(245,242,235,0.6); padding: 0 32px; display: flex; align-items: center; gap: 8px; }
+    .ticker-item strong { color: var(--paper); font-weight: 500; }
+    .ticker-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--accent); flex-shrink: 0; display: inline-block; }
+    @keyframes ticker { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+    .pain { padding: 64px 32px; max-width: 960px; margin: 0 auto; }
+    .section-label { font-size: 11px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+    .pain-h2 { font-family: 'Instrument Serif', serif; font-size: 34px; line-height: 1.2; letter-spacing: -0.5px; margin-bottom: 40px; max-width: 480px; }
+    .pain-h2 em { font-style: italic; color: var(--accent2); }
+    .pain-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .pain-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; transition: all .2s; }
+    .pain-card:hover { border-color: var(--ink); transform: translateY(-2px); }
+    .pain-num { font-family: 'Instrument Serif', serif; font-size: 36px; color: var(--border); font-weight: 400; margin-bottom: 12px; }
+    .pain-title { font-size: 14px; font-weight: 500; color: var(--ink); margin-bottom: 6px; }
+    .pain-body { font-size: 13px; color: var(--muted); line-height: 1.6; font-weight: 300; }
+    .pain-tag { display: inline-block; margin-top: 12px; font-size: 11px; padding: 3px 8px; border-radius: 20px; }
+    .how { background: var(--ink); padding: 64px 32px; }
+    .how-inner { max-width: 960px; margin: 0 auto; }
+    .how-label { font-size: 11px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: rgba(245,242,235,0.4); margin-bottom: 12px; }
+    .how-h2 { font-family: 'Instrument Serif', serif; font-size: 34px; color: var(--paper); letter-spacing: -0.5px; margin-bottom: 40px; }
+    .how-h2 em { font-style: italic; color: #9FE1CB; }
+    .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: rgba(245,242,235,0.08); border-radius: 12px; overflow: hidden; }
+    .step { background: var(--ink); padding: 24px; }
+    .step-n { font-size: 11px; color: rgba(245,242,235,0.3); margin-bottom: 14px; font-weight: 500; }
+    .step-icon { width: 28px; height: 28px; border-radius: 8px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; }
+    .step-title { font-size: 14px; font-weight: 500; color: var(--paper); margin-bottom: 6px; }
+    .step-body { font-size: 12px; color: rgba(245,242,235,0.5); line-height: 1.6; font-weight: 300; }
+    .social { background: #f9f8f5; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 48px 32px; }
+    .social-inner { max-width: 960px; margin: 0 auto; }
+    .social-label { font-size: 11px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 28px; }
+    .testimonials { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .testi { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+    .testi-quote { font-family: 'Instrument Serif', serif; font-size: 15px; color: var(--ink); line-height: 1.6; margin-bottom: 16px; font-style: italic; }
+    .testi-author { font-size: 12px; font-weight: 500; color: var(--ink); }
+    .testi-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .testi-stat { font-size: 20px; font-weight: 500; color: var(--accent); font-family: 'Instrument Serif', serif; margin-top: 10px; }
+    .testi-stat-label { font-size: 11px; color: var(--muted); }
+    .pricing { padding: 64px 32px; max-width: 960px; margin: 0 auto; }
+    .pricing-label { font-size: 11px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+    .pricing-h2 { font-family: 'Instrument Serif', serif; font-size: 34px; letter-spacing: -0.5px; margin-bottom: 8px; }
+    .pricing-sub { font-size: 14px; color: var(--muted); margin-bottom: 40px; font-weight: 300; }
+    .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .plan { border: 1px solid var(--border); border-radius: 14px; padding: 28px 24px; background: var(--card); transition: all .2s; }
+    .plan.featured { border-color: var(--accent); border-width: 2px; }
+    .plan-badge { font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 20px; background: #e8f5e9; color: var(--accent); margin-bottom: 16px; display: inline-block; }
+    .plan-name { font-size: 14px; font-weight: 500; color: var(--ink); margin-bottom: 4px; }
+    .plan-price { font-family: 'Instrument Serif', serif; font-size: 36px; color: var(--ink); letter-spacing: -1px; margin-bottom: 4px; }
+    .plan-price span { font-size: 14px; font-family: 'DM Sans', sans-serif; color: var(--muted); font-weight: 300; }
+    .plan-desc { font-size: 12px; color: var(--muted); margin-bottom: 20px; font-weight: 300; line-height: 1.5; }
+    .plan-divider { height: 1px; background: var(--border); margin-bottom: 16px; }
+    .plan-feature { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 9px; font-size: 12px; color: var(--muted); font-weight: 300; }
+    .plan-check { width: 14px; height: 14px; flex-shrink: 0; margin-top: 1px; }
+    .plan-btn { width: 100%; margin-top: 20px; padding: 11px; border-radius: 8px; font-size: 13px; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all .15s; }
+    .plan-btn-outline { background: transparent; border: 1px solid var(--border); color: var(--ink); }
+    .plan-btn-outline:hover { border-color: var(--ink); }
+    .plan-btn-solid { background: var(--accent); color: var(--paper); border: none; }
+    .plan-btn-solid:hover { background: #0f3d26; }
+    .footer-cta { padding: 72px 32px; max-width: 960px; margin: 0 auto; text-align: center; }
+    .fcta-h2 { font-family: 'Instrument Serif', serif; font-size: 40px; letter-spacing: -1px; line-height: 1.15; margin-bottom: 16px; }
+    .fcta-h2 em { font-style: italic; color: var(--accent); }
+    .fcta-sub { font-size: 15px; color: var(--muted); margin-bottom: 32px; font-weight: 300; }
+    .fcta-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    footer { border-top: 1px solid var(--border); padding: 24px 32px; display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: var(--muted); flex-wrap: wrap; gap: 12px; }
+    @media (max-width: 640px) {
+      .hero { grid-template-columns: 1fr; }
+      .pain-grid { grid-template-columns: 1fr; }
+      .steps { grid-template-columns: 1fr 1fr; }
+      .pricing-grid { grid-template-columns: 1fr; }
+      .testimonials { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-brand">Guardian<span>AI</span></div>
+    <div class="nav-links">
+      <a href="#problem">Features</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#how">How it works</a>
+    </div>
+    <button type="button" class="nav-cta" data-guardianai="start">Start free trial</button>
+  </nav>
+
+  <section class="hero">
+    <div>
+      <div class="hero-eyebrow">For Amazon India sellers</div>
+      <h1 class="hero-h1">Stop losing money to<br /><em>GST leakage</em></h1>
+      <p class="hero-body">Guardian AI scans your MTR, settlement reports, and invoices to find every rupee Amazon owes you — GST gaps, TCS credits, fee overcharges. In under 60 seconds.</p>
+      <div class="hero-actions">
+        <button type="button" class="btn-primary" data-guardianai="try">Try free — upload your CSV</button>
+        <button type="button" class="btn-ghost" data-guardianai="demo">See a demo</button>
+      </div>
+      <p class="hero-note">Free for first report · No credit card needed · Results in 60 seconds</p>
+    </div>
+    <div class="hero-card">
+      <div class="hc-header">
+        <div class="hc-dots">
+          <div class="hc-dot"></div><div class="hc-dot"></div><div class="hc-dot"></div>
+        </div>
+        <span class="hc-badge">Live analysis</span>
+      </div>
+      <div class="hc-body">
+        <div class="hc-alert">
+          <div class="hc-alert-title">Leakage found this month</div>
+          <div class="hc-alert-val">&#8377;18,440</div>
+          <div class="hc-alert-sub">Across 4 categories · Feb 2026</div>
+        </div>
+        <div class="hc-metrics">
+          <div class="hc-m"><div class="hc-m-label">TCS claimable</div><div class="hc-m-val g">&#8377;3,840</div></div>
+          <div class="hc-m"><div class="hc-m-label">GST violations</div><div class="hc-m-val r">3 invoices</div></div>
+          <div class="hc-m"><div class="hc-m-label">FBA overcharge</div><div class="hc-m-val r">&#8377;6,100</div></div>
+          <div class="hc-m"><div class="hc-m-label">Confidence</div><div class="hc-m-val">94%</div></div>
+        </div>
+        <div class="hc-bar-row"><div class="hc-bar-label">Referral fee</div><div class="hc-bar-track"><div class="hc-bar-fill" style="width:38%;background:#c8401a"></div></div><div class="hc-bar-amt">&#8377;4,200</div></div>
+        <div class="hc-bar-row"><div class="hc-bar-label">FBA fee</div><div class="hc-bar-track"><div class="hc-bar-fill" style="width:52%;background:#c8401a"></div></div><div class="hc-bar-amt">&#8377;6,100</div></div>
+        <div class="hc-bar-row"><div class="hc-bar-label">GST gap</div><div class="hc-bar-track"><div class="hc-bar-fill" style="width:41%;background:#e8a87c"></div></div><div class="hc-bar-amt">&#8377;4,800</div></div>
+        <div class="hc-bar-row"><div class="hc-bar-label">Unmatched</div><div class="hc-bar-track"><div class="hc-bar-fill" style="width:28%;background:#e8a87c"></div></div><div class="hc-bar-amt">&#8377;3,340</div></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="ticker">
+    <div class="ticker-inner">
+      <span class="ticker-item"><span class="ticker-dot"></span>218,000+ active Amazon India sellers</span>
+      <span class="ticker-item"><span class="ticker-dot"></span><strong>GST</strong> · Sept 2025: 12% slab abolished — are your invoices updated?</span>
+      <span class="ticker-item"><span class="ticker-dot"></span>Average seller loses &#8377;12,000/month to unreconciled TCS</span>
+      <span class="ticker-item"><span class="ticker-dot"></span>Amazon deducts 1% TCS on every sale — most sellers never claim it back</span>
+      <span class="ticker-item"><span class="ticker-dot"></span>FBA fee disputes: Amazon has a 30-day window to raise claims</span>
+      <span class="ticker-item"><span class="ticker-dot"></span>218,000+ active Amazon India sellers</span>
+      <span class="ticker-item"><span class="ticker-dot"></span><strong>GST</strong> · Sept 2025: 12% slab abolished — are your invoices updated?</span>
+      <span class="ticker-item"><span class="ticker-dot"></span>Average seller loses &#8377;12,000/month to unreconciled TCS</span>
+      <span class="ticker-item"><span class="ticker-dot"></span>Amazon deducts 1% TCS on every sale — most sellers never claim it back</span>
+      <span class="ticker-item"><span class="ticker-dot"></span>FBA fee disputes: Amazon has a 30-day window to raise claims</span>
+    </div>
+  </div>
+
+  <section class="pain" id="problem">
+    <div class="section-label">The problem</div>
+    <h2 class="pain-h2">Every month, Amazon sellers lose money they don't<em> know about</em></h2>
+    <div class="pain-grid">
+      <div class="pain-card">
+        <div class="pain-num">01</div>
+        <div class="pain-title">GST slabs changed — silently</div>
+        <div class="pain-body">The 12% slab was abolished in Sept 2025. Invoices still showing 12% risk GST notices and ITC rejection. Most sellers haven't checked.</div>
+        <span class="pain-tag" style="background:#fff0ec;color:#8c2d10">Notice risk</span>
+      </div>
+      <div class="pain-card">
+        <div class="pain-num">02</div>
+        <div class="pain-title">TCS sits unclaimed every month</div>
+        <div class="pain-body">Amazon deducts 1% Tax Collected at Source on every sale. You can reclaim it in GSTR-3B — but only if you know it's there.</div>
+        <span class="pain-tag" style="background:#e8f5e9;color:#1a5c3a">Free money</span>
+      </div>
+      <div class="pain-card">
+        <div class="pain-num">03</div>
+        <div class="pain-title">Settlement never matches MTR</div>
+        <div class="pain-body">Referral fees, FBA charges, and closing fees are often miscalculated. Without reconciliation, you simply never know what's missing.</div>
+        <span class="pain-tag" style="background:#fff8e1;color:#7a5c00">Hidden leakage</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="how" id="how">
+    <div class="how-inner">
+      <div class="how-label">How it works</div>
+      <h2 class="how-h2">From upload to insight<br />in <em>under 60 seconds</em></h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-n">01</div>
+          <div class="step-icon" style="background:rgba(159,225,203,0.15)">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 9V3M7 3L4 6M7 3L10 6" stroke="#9FE1CB" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 12h10" stroke="#9FE1CB" stroke-width="1.3" stroke-linecap="round"/></svg>
+          </div>
+          <div class="step-title">Upload your CSV</div>
+          <div class="step-body">Drop your Amazon orders, MTR, or settlement CSV. Any column format works — we detect it automatically.</div>
+        </div>
+        <div class="step">
+          <div class="step-n">02</div>
+          <div class="step-icon" style="background:rgba(159,225,203,0.15)">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 4h10M2 7h7M2 10h5" stroke="#9FE1CB" stroke-width="1.3" stroke-linecap="round"/></svg>
+          </div>
+          <div class="step-title">Python reads the data</div>
+          <div class="step-body">Rule-based extraction handles &#8377; symbols, commas, merged cells. No AI needed — instant and accurate.</div>
+        </div>
+        <div class="step">
+          <div class="step-n">03</div>
+          <div class="step-icon" style="background:rgba(159,225,203,0.15)">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5" stroke="#9FE1CB" stroke-width="1.3"/><path d="M7 4v3l2 1.5" stroke="#9FE1CB" stroke-width="1.3" stroke-linecap="round"/></svg>
+          </div>
+          <div class="step-title">GST + TCS computed</div>
+          <div class="step-body">Every invoice checked against HSN slabs. TCS calculated. Place of supply verified. All in Python — no hallucinations.</div>
+        </div>
+        <div class="step">
+          <div class="step-n">04</div>
+          <div class="step-icon" style="background:rgba(159,225,203,0.15)">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 11L5 7l3 2 4-5" stroke="#9FE1CB" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="step-title">AI explains it plainly</div>
+          <div class="step-body">Gemini writes a plain-English narrative. Numbers come from Python, not guesswork.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="social">
+    <div class="social-inner">
+      <div class="social-label">What sellers say</div>
+      <div class="testimonials">
+        <div class="testi">
+          <div class="testi-quote">"Found &#8377;22,000 in unclaimed TCS across 3 months. Literally paid for the tool for a year in one report."</div>
+          <div class="testi-author">Priya S.</div>
+          <div class="testi-sub">Electronics seller · Delhi</div>
+          <div class="testi-stat">&#8377;22,000</div>
+          <div class="testi-stat-label">recovered in first use</div>
+        </div>
+        <div class="testi">
+          <div class="testi-quote">"My CA used to take 3 days to reconcile my settlement. Guardian AI does it in 40 seconds and finds things he missed."</div>
+          <div class="testi-author">Arjun M.</div>
+          <div class="testi-sub">Fashion seller · Mumbai</div>
+          <div class="testi-stat">3 days &#8594; 40 sec</div>
+          <div class="testi-stat-label">reconciliation time</div>
+        </div>
+        <div class="testi">
+          <div class="testi-quote">"The Sept 2025 GST slab alert saved me from a potential notice. I had 8 invoices still showing 12%."</div>
+          <div class="testi-author">Rohit K.</div>
+          <div class="testi-sub">Home goods seller · Bangalore</div>
+          <div class="testi-stat">8 invoices</div>
+          <div class="testi-stat-label">corrected before filing</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="pricing" id="pricing">
+    <div class="pricing-label">Pricing</div>
+    <h2 class="pricing-h2">Simple, honest pricing</h2>
+    <p class="pricing-sub">Cancel anytime. Most sellers recover the cost in their first report.</p>
+    <div class="pricing-grid">
+      <div class="plan">
+        <div class="plan-name">Starter</div>
+        <div class="plan-price">&#8377;1,499 <span>/ month</span></div>
+        <div class="plan-desc">For sellers doing &#8377;5&#8211;25L/month. Core reconciliation and GST checks.</div>
+        <div class="plan-divider"></div>
+        <div class="plan-feature"><svg class="plan-check" viewBox="0 0 14 14" fill="none"><path d="M2.5 7l3.5 3.5 5.5-6" stroke="#1a5c3a" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>MTR vs settlement recon</div>
+        <div class="plan-feature"><svg class="plan-check" viewBox="0 0 14 14" fill="none"><path d="M2.5 7l3.5 3.5 5.5-6" stroke="#1a5c3a" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>TCS claimable calculation</div>
+        <div class="plan-feature"><svg class="plan-check" viewBox="0 0 14 14" fill="none"><path d="M2.5 7l3.5 3.5 5.5-6" stroke="#1a5c3a" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>GST slab violation alerts</div>
+        <div class="plan-feature"><svg class="plan-check" viewBox="0 0 14 14" fill="none"><path d="M2.5 7l3.5 3.5 5.5-6" stroke="#1a5c3a" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>10 reports / month</div>
+        <button type="button" class="plan-btn plan-btn-outline" data-guardianai="start">Get started</button>
+      </div>
+      <div class="plan featured">
+        <span class="plan-badge">Most popular</span>
+        <div class="plan-name">Growth</div>
+        <div class="plan-price">&#8377;4,999 <span>/ month</span></div>
+        <div class="plan-desc">For serious sellers doing &#8377;25L+ /month. Full AI analysis and ad waste detection.</div>
+        <div class="plan-divider"></div>
+        <div class="plan-feature"><svg class="plan-check" viewBox="0 0 14 14" fill="none"><path d="M2.5 7l3.5 3.5 5.5-6" stroke="#1a5c3a" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Everything in Starter</div>
+        <div class="plan-feature"><svg class="plan-check" viewBox="0 0 14 14" fill="none"><path d="M2.5 7l3.5 3.5 5.5-6" stroke="#1a5c3a" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>ACOS + ad waste by keyword</div>
+        <div class="plan-feature"><svg class="plan-check" viewBox="0 0 14 14" fill="none"><path d="M2.5 7l3.5 3.5 5.5-6" stroke="#1a5c3a" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>AI chat with your data</div>
+        <div class="plan-feature"><svg class="plan-check" viewBox="0 0 14 14" fill="none"><path d="M2.5 7l3.5 3.5 5.5-6" stroke="#1a5c3a" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>PPT export for your CA</div>
+        <div class="plan-feature"><svg class="plan-check" viewBox="0 0 14 14" fill="none"><path d="M2.5 7l3.5 3.5 5.5-6" stroke="#1a5c3a" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Unlimited reports</div>
+        <button type="button" class="plan-btn plan-btn-solid" data-guardianai="start">Start Growth plan</button>
+      </div>
+      <div class="plan">
+        <div class="plan-name">Pro</div>
+        <div class="plan-price">&#8377;9,999 <span>/ month</span></div>
+        <div class="plan-desc">For agencies and large sellers managing multiple accounts or brands.</div>
+        <div class="plan-divider"></div>
+        <div class="plan-feature"><svg class="plan-check" viewBox="0 0 14 14" fill="none"><path d="M2.5 7l3.5 3.5 5.5-6" stroke="#1a5c3a" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Everything in Growth</div>
+        <div class="plan-feature"><svg class="plan-check" viewBox="0 0 14 14" fill="none"><path d="M2.5 7l3.5 3.5 5.5-6" stroke="#1a5c3a" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>5 seller accounts</div>
+        <div class="plan-feature"><svg class="plan-check" viewBox="0 0 14 14" fill="none"><path d="M2.5 7l3.5 3.5 5.5-6" stroke="#1a5c3a" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Priority support</div>
+        <div class="plan-feature"><svg class="plan-check" viewBox="0 0 14 14" fill="none"><path d="M2.5 7l3.5 3.5 5.5-6" stroke="#1a5c3a" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>CA-ready reports</div>
+        <button type="button" class="plan-btn plan-btn-outline" data-guardianai="start">Contact us</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="footer-cta">
+    <h2 class="fcta-h2">Your first report is<br /><em>free</em></h2>
+    <p class="fcta-sub">Upload your Amazon CSV right now. See exactly what you're losing before you pay a rupee.</p>
+    <div class="fcta-actions">
+      <button type="button" class="btn-primary" style="padding:14px 28px;font-size:15px" data-guardianai="try">Upload your CSV — it's free</button>
+      <button type="button" class="btn-ghost" data-guardianai="demo">Watch a 2-min demo</button>
+    </div>
+  </section>
+
+  <footer>
+    <div>Guardian<span style="color:var(--accent);font-family:'Instrument Serif',serif;font-style:italic">AI</span> · Built for Amazon India sellers</div>
+    <div>GST · TCS · Settlement recon · Ad waste</div>
+  </footer>
+
+  <script>
+    (function () {
+      var origin = window.location.origin;
+      function send(kind) {
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ source: 'guardianai-landing', kind: kind }, origin);
+        }
+      }
+      document.addEventListener('click', function (e) {
+        var t = e.target;
+        if (!t || !t.closest) return;
+        var btn = t.closest('[data-guardianai]');
+        if (!btn) return;
+        var k = btn.getAttribute('data-guardianai');
+        if (k === 'try' || k === 'demo') send('try');
+        else if (k === 'start') send('start');
+      });
+    })();
+  </script>
+</body>
+</html>

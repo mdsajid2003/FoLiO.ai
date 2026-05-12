@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.env.local
+.env
+*.env
+.DS_Store
+*.log
+
+# Runtime data — contains full financial reports and user integrity records.
+# NEVER commit these to git.
+.guardianai/
+.data/

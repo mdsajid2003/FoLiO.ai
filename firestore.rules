@@ -1,0 +1,76 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      // Replace this with your actual admin email before deploying.
+      // Using an env var here is not possible in Firestore rules — hardcode your
+      // verified admin email address below, then deploy rules via Firebase CLI.
+      return isAuthenticated() &&
+        request.auth.token.email == "YOUR_ADMIN_EMAIL@yourdomain.com" &&
+        request.auth.token.email_verified == true;
+    }
+
+    function isValidEmail(email) {
+      return email is string && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    function isValidDateString(dateStr) {
+      return dateStr is string && dateStr.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.*");
+    }
+
+    function isValidUser(data) {
+      return data.keys().hasAll(['email', 'plan', 'subscriptionStatus']) &&
+             data.email is string && data.email.size() < 256 && isValidEmail(data.email) &&
+             data.plan in ['free', 'growth', 'pro'] &&
+             data.subscriptionStatus in ['active', 'inactive'];
+    }
+
+    function isValidReport(data) {
+      return data.keys().hasAll(['totalRevenue', 'recoverableLeakage', 'createdAt']) &&
+             data.totalRevenue is number &&
+             data.recoverableLeakage is number &&
+             isValidDateString(data.createdAt);
+    }
+
+    function isValidMismatch(data) {
+      return data.keys().hasAll(['orderId', 'diff', 'reason']) &&
+             data.orderId is string && data.orderId.size() < 100 &&
+             data.diff is number &&
+             data.reason is string && data.reason.size() < 500;
+    }
+
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId) && isValidUser(request.resource.data);
+      allow update: if isOwner(userId) && isValidUser(request.resource.data);
+      allow delete: if isAdmin();
+
+      match /reports/{reportId} {
+        allow read: if isOwner(userId) || isAdmin();
+        allow create: if isOwner(userId) && isValidReport(request.resource.data);
+        allow update: if isOwner(userId) && isValidReport(request.resource.data);
+        allow delete: if isOwner(userId) || isAdmin();
+
+        match /mismatches/{mismatchId} {
+          allow read: if isOwner(userId) || isAdmin();
+          allow create: if isOwner(userId) && isValidMismatch(request.resource.data);
+          allow update: if isOwner(userId) && isValidMismatch(request.resource.data);
+          allow delete: if isOwner(userId) || isAdmin();
+        }
+      }
+    }
+
+    match /{path=**} {
+      allow read, write: if false;
+    }
+  }
+}

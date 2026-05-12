@@ -1,0 +1,29 @@
+# Enforce LF line endings for all text files — prevents CRLF drift on Windows editors.
+* text=auto eol=lf
+
+# Explicitly mark source files as text
+*.ts text eol=lf
+*.tsx text eol=lf
+*.js text eol=lf
+*.jsx text eol=lf
+*.json text eol=lf
+*.css text eol=lf
+*.html text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.env text eol=lf
+
+# Binary files — never touch line endings
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+Dockerfile text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
