@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # FoLiOAi — Seller Finance Intelligence
 
 AI-powered Amazon seller reconciliation. Deterministic leakage detection, GST audit, TCS recovery.
@@ -125,3 +126,7 @@ To unlock paid features in dev: update `plan` field in Firestore for your user d
 - Financial disclaimer shown on every page — informational only, not CA advice.
 - DPDP Act 2023 consent modal before any file upload.
 - Data stored in Firebase (Google Cloud).
+=======
+# FoLiO.ai
+FoLiOAI is an AI-powered settlement analytics tool for Amazon  India sellers. Upload your settlement report and get an instant  breakdown of revenue, profit, recoverable leakage, and a full  GST/TCS/TDS tax summary — all computed deterministically from  your raw data.
+>>>>>>> c420874c316ca2e69cdb76dc7178bbfa2f2e29c2
