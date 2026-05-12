@@ -6,7 +6,6 @@ import { fileURLToPath } from 'url';
 import { reconciliationQueue, startWorker, getAiUsage } from './src/lib/queue.ts';
 import { logEvent } from './src/lib/logger.ts';
 import { requireAuth, requirePlan } from './src/lib/auth-middleware.ts';
-import { mountPaymentRoutes } from './src/lib/payment-routes.ts';
 
 // Note: individual route handlers use requireAuth directly.
 // No global public-route bypass middleware is needed.
@@ -67,17 +66,16 @@ async function startServer() {
     res.setHeader('X-XSS-Protection', '1; mode=block');
     res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
     res.setHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
-    // #27 fix: add Content-Security-Policy
     res.setHeader(
       'Content-Security-Policy',
       [
         "default-src 'self'",
-        "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://checkout.razorpay.com",
+        "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
         "font-src 'self' https://fonts.gstatic.com",
         "img-src 'self' data: https:",
-        "connect-src 'self' https://api.anthropic.com https://api.razorpay.com https://*.googleapis.com https://*.firebaseio.com https://*.firebaseapp.com",
-        "frame-src https://checkout.razorpay.com https://api.razorpay.com",
+        "connect-src 'self' https://api.anthropic.com https://*.googleapis.com https://*.firebaseio.com https://*.firebaseapp.com",
+        "frame-src 'self'",
         "object-src 'none'",
         "base-uri 'self'",
         "form-action 'self'",
@@ -129,16 +127,14 @@ async function startServer() {
     return res.json({ plan: 'free' });
   });
 
-  // ── AI usage tracking — #19 fix: read uid from verified auth, not raw query param ──
+  // ── AI usage tracking ──
   app.get('/api/ai-usage', requireAuth, (req, res) => {
-    // res.locals.uid is set by requireAuth from a verified token (or guest fallback IP)
     const userId = (res.locals.uid as string) || req.ip || 'anonymous';
     const usage = getAiUsage(userId);
     res.json({ used: usage.count, limit: usage.limit, remaining: usage.limit - usage.count, monthKey: usage.monthKey });
   });
 
   // ── Legal docs (serve static markdown files as HTML) ──
-  // We escape all user-visible content then apply safe substitutions to avoid XSS.
   function escapeHtml(str: string): string {
     return str
       .replace(/&/g, '&amp;')
@@ -151,7 +147,6 @@ async function startServer() {
   function serveLegalDoc(filePath: string, title: string, res: express.Response) {
     try {
       const raw = fs.readFileSync(filePath, 'utf8');
-      // Escape first, then apply safe HTML substitutions on the escaped string
       const escaped = escapeHtml(raw);
       const html = escaped
         .replace(/^# (.+)$/gm, '<h1>$1</h1>')
@@ -178,9 +173,8 @@ async function startServer() {
     serveLegalDoc(path.join(process.cwd(), 'PRIVACY.md'), 'Privacy Policy', res);
   });
 
-  // Demo CSV for "Load demo report" — served from public/demo/ so it survives Docker builds
+  // Demo CSV for "Load demo report"
   const demoCsvPath = path.join(__dirname, 'public', 'demo', 'amazon-demo.csv');
-  // Keep old path as alias for any bookmarked URLs
   const handleDemoCsv = (_req: express.Request, res: express.Response) => {
     try {
       if (!fs.existsSync(demoCsvPath)) {
@@ -194,13 +188,10 @@ async function startServer() {
   };
   app.get('/public/demo/amazon-demo.csv', handleDemoCsv);
   app.get('/tests/fixtures/amazon-demo.csv', handleDemoCsv);
-  // #9 fix: the client fetches '/demo/amazon-demo.csv' but the server only registered
-  // '/public/demo/...' — in production (Express, no Vite) this 404s.
   app.get('/demo/amazon-demo.csv', handleDemoCsv);
 
   // ── Reconciliation: enqueue ──
   app.post('/api/reconcile', requireAuth, async (req, res) => {
-    // #20 fix: rate-limit by authenticated userId, not IP (IP punishes shared NAT users)
     const rateLimitKey = (res.locals.uid as string) || req.ip || 'anon';
     if (!allowRequest(`reconcile:${rateLimitKey}`, 15, 60_000)) {
       return res.status(429).json({ error: 'Too many upload requests. Please wait a minute and try again.' });
@@ -209,8 +200,6 @@ async function startServer() {
     const rawFilename = req.body.filename;
     const rawData = req.body.data;
 
-
-    // Validate filename
     if (!rawFilename || typeof rawFilename !== 'string') {
       return res.status(400).json({ error: 'filename is required and must be a string' });
     }
@@ -218,23 +207,18 @@ async function startServer() {
       return res.status(400).json({ error: 'Invalid filename. Only .csv, .xls, .xlsx files are accepted.' });
     }
 
-    // Validate data
     if (!rawData || typeof rawData !== 'string') {
       return res.status(400).json({ error: 'data is required and must be a string' });
     }
     if (rawData.length > 15 * 1024 * 1024) {
       return res.status(400).json({ error: 'File is too large (max 15 MB).' });
     }
-    // Reject binary content
     const sample = rawData.slice(0, 512);
     if (/\x00/.test(sample)) {
       return res.status(400).json({ error: 'File appears to be binary. Only plain-text CSV files are accepted.' });
     }
 
-    // uid comes from requireAuth middleware — verified Firebase token or guest fallback.
-    // No longer trusts client-supplied userId.
     const userId = (res.locals.uid as string) || 'anonymous';
-
     const filename = rawFilename.trim();
     const firstLine = rawData.split('\n')[0].slice(0, 300);
     const delimiter = (firstLine.match(/\t/g) ?? []).length > (firstLine.match(/,/g) ?? []).length ? 'TAB' : 'COMMA';
@@ -247,13 +231,9 @@ async function startServer() {
         data: rawData,
         userId,
         timestamp: new Date().toISOString(),
-        // BUGFIX: columnOverrides was received from client but never forwarded to the job.
-        // The column mapping banner re-submit was silently ignored every time.
         columnOverrides: typeof columnOverrides === 'object' && !Array.isArray(columnOverrides)
           ? columnOverrides as Record<string, string>
           : {},
-        // BUGFIX: propagate seller's registered state so IGST/CGST/SGST split is correct.
-        // Client may supply it via X-Seller-State header; falls back to SELLER_REGISTERED_STATE env.
         sellerRegisteredState: (req.headers['x-seller-state'] as string | undefined)?.trim().toUpperCase().slice(0, 2)
           || process.env.SELLER_REGISTERED_STATE?.trim().toUpperCase().slice(0, 2),
       });
@@ -270,9 +250,6 @@ async function startServer() {
       const job = await reconciliationQueue.getJob(req.params.jobId);
       if (!job) return res.status(404).json({ error: 'Job not found' });
 
-      // SECURITY FIX: Verify the requesting user owns this job.
-      // Without this check any authenticated user can read any other user's
-      // financial report by enumerating sequential job IDs.
       const requestingUid = res.locals.uid as string;
       if (job.data.userId !== requestingUid) {
         logEvent('warn', 'reconcile_status_forbidden', { jobId: req.params.jobId, requestingUid, ownerUid: job.data.userId });
@@ -293,9 +270,8 @@ async function startServer() {
     }
   });
 
-  // ── AI Chat (Claude-powered) — requires growth or pro plan (#B fix) ──
+  // ── AI Chat (Claude-powered) — requires growth or pro plan ──
   app.post('/api/chat', requireAuth, requirePlan('growth', 'pro'), async (req, res) => {
-    // #20 fix: rate-limit by userId, not IP
     const rateLimitKey = (res.locals.uid as string) || req.ip || 'anon';
     if (!allowRequest(`chat:${rateLimitKey}`, 40, 60_000)) {
       return res.status(429).json({ error: 'Too many chat requests. Please wait a minute and try again.' });
@@ -304,12 +280,10 @@ async function startServer() {
     const reportContext: ChatContext | undefined = req.body.reportContext;
     const history: { role: string; content: string }[] | undefined = req.body.history;
     if (!message) return res.status(400).json({ error: 'message required' });
-    // Cap message length to prevent prompt-injection / API cost abuse
     const safeMessage = String(message).slice(0, 2000);
 
     const apiKey = process.env.ANTHROPIC_API_KEY;
 
-    // Build context from full report
     let contextBlock = '';
     if (reportContext) {
       contextBlock = `
@@ -332,19 +306,14 @@ Report data for this seller:
 - Recommended ITR Form: ${reportContext.itrForm ?? 'N/A'}`;
     }
 
-    // Try Claude first
     if (apiKey && apiKey.length > 10 && apiKey !== 'your_anthropic_api_key_here') {
       try {
         const Anthropic = (await import('@anthropic-ai/sdk')).default;
         const client = new Anthropic({ apiKey });
 
-        // Build conversation history (last 5 messages)
-        // #4 fix: if the client accidentally included the current message as the last history
-        // entry (old bug — now fixed client-side too), strip it to prevent sending it twice.
         const messages: { role: 'user' | 'assistant'; content: string }[] = [];
         if (Array.isArray(history)) {
           const filtered = history.slice(-5);
-          // Drop last entry if it duplicates the current message
           const last = filtered[filtered.length - 1];
           const deduped = (last?.role === 'user' && last?.content?.trim() === safeMessage?.trim())
             ? filtered.slice(0, -1)
@@ -364,12 +333,10 @@ Report data for this seller:
           res.setHeader('Connection', 'keep-alive');
           res.flushHeaders();
 
-          // #21 fix: send a keep-alive comment every 15 s to prevent proxy/browser timeouts
           const heartbeat = setInterval(() => {
             if (!res.writableEnded) res.write(': keep-alive\n\n');
           }, 15_000);
 
-          // #C fix: stop streaming if client disconnects before the LLM finishes
           let clientGone = false;
           req.on('close', () => {
             clientGone = true;
@@ -384,7 +351,7 @@ Report data for this seller:
           });
 
           for await (const event of stream) {
-            if (clientGone) break; // #C: stop consuming tokens after disconnect
+            if (clientGone) break;
             if (
               event.type === 'content_block_delta' &&
               'delta' in event &&
@@ -420,7 +387,6 @@ Report data for this seller:
       }
     }
 
-    // Fallback: template-based response
     res.json({ reply: generateTemplateResponse(safeMessage, reportContext) });
   });
 
@@ -430,7 +396,6 @@ Report data for this seller:
       const job = await reconciliationQueue.getJob(req.params.jobId);
       if (!job || !job.returnvalue) return res.status(404).json({ error: 'Report not found' });
 
-      // SECURITY FIX: Verify ownership — GST/TCS/TDS data is sensitive financial info.
       const requestingUid = res.locals.uid as string;
       if (job.data.userId !== requestingUid) {
         logEvent('warn', 'tax_summary_forbidden', { jobId: req.params.jobId, requestingUid, ownerUid: job.data.userId });
@@ -450,16 +415,11 @@ Report data for this seller:
     }
   });
 
-  // ── Payments (Razorpay) ──
-  mountPaymentRoutes(app);
-
-  // Unmatched /api/* → JSON 404 (avoid SPA HTML for bad API paths)
+  // Unmatched /api/* → JSON 404
   app.use('/api', (req, res) => {
     res.status(404).json({ error: 'Not found' });
   });
 
-  // In production serve the built SPA; in dev, Vite runs separately on its own port
-  // and proxies /api to this server (see vite.config.ts proxy setting).
   if (process.env.NODE_ENV === 'production') {
     const distPath = path.join(process.cwd(), 'dist');
     app.use(express.static(distPath));
